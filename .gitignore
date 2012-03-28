@@ -1,0 +1,8 @@
+*.pyc
+node*/*
+*.egg-info
+lib/cortex/bin/tmp/*
+build/*
+dist/*
+.cache/*
+*#*
