@@ -1,6 +1,8 @@
+""" spock.simplex
 """
-"""
-from spock.aima import Expr, FolKB, expr, is_definite_clause
+
+from .aima import Expr, FolKB, expr, is_definite_clause
+
 class Expression(Expr):
     """
 

@@ -1,4 +1,6 @@
-"""Representations and Inference for Logic (Chapters 7-10)
+""" spock.aima (completely stolen from aima.logic source)
+
+Representations and Inference for Logic (Chapters 7-10)
 
 Covers both Propositional and First-Order Logic. First we have four
 important data types:
@@ -25,7 +27,7 @@ And a few other functions:
 """
 
 import re
-from .utils import *
+from spock.utils import *
 
 #______________________________________________________________________________
 
