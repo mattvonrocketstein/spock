@@ -1,43 +1,40 @@
-""" spock:
-
-     logic for python
+""" spock: logic programming for python
 """
-from spock.aima import FolKB
-from spock.simplex import Expression, predicate, symbol, s
 
+from spock.simplex import Expression, predicate, symbol, s
+from spock.doctrine import Doctrine
+
+class Time(object): pass
+class Now(Time): pass
 
 class theta(object):
     """ an expression true at a time """
     def __init__(self, expression=None, time=None):
-        self.ex = expression
+        self.expression = expression
         self.time = time
+
     def __str__(self):
         return "({code} @ {t})".format(code=str(self.ex), t=self.time)
 
 class Obligation(theta):
-    def __init__(self, a,b,t,j):
-        " a is committed to b about j at time t "
-        ex = predicate.Obligation(s[a], s[b], s[j])
-        super(Obligation,self).__init__(ex, t)
-class Doctrine(FolKB):
-    """  a Doctrine is a collection of beliefs.
+    """ Following Shoham:'94, an obligation is a 4-tuple
+        representing a directed commitment from alfa to beta
+        about gamma at theta.  Typical conceptions about these
+        data structures follows, but, for flexibility, not much
+        along these lines is actually enforced.
 
-         ask(q)::
-           returns the first answer or False
-
-         ask_generator(q)::
-           yields all solutions with all symbols/values
-           combinations in their own dictionary.
-
-         consider(q, [with-respect-to])::
-           yields all solutions as a flattened value,
-           with respect to variable specified by  `wrt`
+           * Theta is a specific time or a value like "always" or "never"
+           * Gamma is usually an "action"
+           * Alfa and beta are usually "agents",
     """
+    def __init__(self, alfa, beta, theta, gamma):
+        ex = predicate.Obligation(s[alfa], s[beta], s[gamma])
+        ex.alfa=alfa
+        ex.beta=beta
+        ex.gamma=gamma
+        super(Obligation,self).__init__(expression=ex, time=theta)
 
-    def consider(self, proposition, wrt=None):
-        """ see Doctirne.__doc__ """
-
-        results = self.ask_generator(proposition)
-        if wrt is not None:
-            for x in results:
-                yield x[wrt]
+class Decision(Obligation):
+    """ Following Shoham:'94, a decision is an obligation to onself """
+    def __init__(self, myself, theta, gamma):
+        super(Obligation,self).__init__(myself, myself, theta, gamma)
