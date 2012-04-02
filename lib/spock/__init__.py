@@ -6,6 +6,7 @@ from spock.doctrine import Doctrine
 
 class Time(object): pass
 class Now(Time): pass
+class Always(Time): pass
 
 class theta(object):
     """ an expression true at a time """
@@ -14,7 +15,7 @@ class theta(object):
         self.time = time
 
     def __str__(self):
-        return "({code} @ {t})".format(code=str(self.ex), t=self.time)
+        return "({code} @ {t})".format(code=str(self.expression), t=self.time)
 
 class Obligation(theta):
     """ Following Shoham:'94, an obligation is a 4-tuple
@@ -28,11 +29,12 @@ class Obligation(theta):
            * Alfa and beta are usually "agents",
     """
     def __init__(self, alfa, beta, theta, gamma):
-        ex = predicate.Obligation(s[alfa], s[beta], s[gamma])
-        ex.alfa=alfa
-        ex.beta=beta
-        ex.gamma=gamma
-        super(Obligation,self).__init__(expression=ex, time=theta)
+        self.expression = predicate.Obligation(s[alfa], s[beta], s[gamma])
+        self.expression.alfa = alfa
+        self.expression.beta = beta
+        self.expression.gamma = gamma
+        self.alfa, self.beta, self.gamma = alfa, beta, gamma
+        super(Obligation,self).__init__(expression=self.expression, time=theta)
 
 class Decision(Obligation):
     """ Following Shoham:'94, a decision is an obligation to onself """

@@ -27,12 +27,17 @@ class Doctrine(FolKB):
                 yield x[wrt]
 
 class TemporalDoctrine(defaultdict):
-    """ crude temporal logic: store multiple subdoctrines for any
-        times that are referenced.
+    """ very crude temporal logic: we store multiple subdoctrines for
+        every single time that is referenced.
+
+        TODO: how best to make this work simultaneously in a way that is
+              similar to a Doctrine subclass?  make tell() work with `Always`
+              as a default?  etc.
     """
     @property
     def commitments(self):
         class TMP:
+            """ """
             def __getitem__(himself, x):
                 """ returns { beta : obligation } """
                 results = defaultdict(lambda:[])
