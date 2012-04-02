@@ -43,6 +43,7 @@ class TemporalDoctrine(defaultdict):
                     actually obligation here is an expression representing that
                     obligation, and not an obligation
                 """
+                from spock import Obligation
                 results = defaultdict(lambda:[])
                 for t,doctrine in self.items():
                     clauses = filter(lambda clause: \

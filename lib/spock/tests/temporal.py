@@ -20,8 +20,8 @@ class TemporalTests(unittest.TestCase):
     def test_obligation_basic(self):
         alice, bob, action = 'alice', 'bob', 'dinner'
         obl = Obligation(alice, bob, t, action)
-        self.assertEqual(obl.expression.alfa,'alice')
-        self.assertEqual(obl.expression.beta,'bob')
+        self.assertTrue(obl.expression.alfa == alice == obl._from)
+        self.assertTrue(obl.expression.beta == bob == obl._to)
         return obl
 
     def test_commitments(self):
@@ -30,4 +30,4 @@ class TemporalTests(unittest.TestCase):
         self.kb.obligation(obl)
         alice_commitments = self.kb.commitments[alice]
         self.assertTrue(bob in alice_commitments.keys())
-        self.assertTrue(obl.expression in alice_commitments[obl.expression.beta])
+        self.assertTrue(obl in alice_commitments[bob])
