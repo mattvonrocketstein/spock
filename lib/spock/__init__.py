@@ -28,12 +28,26 @@ class Obligation(theta):
            * Gamma is usually an "action"
            * Alfa and beta are usually "agents",
     """
-    def __init__(self, alfa, beta, theta, gamma):
+    def __eq__(self,other):
+        #if isinstance(other, Obligation):
+        alfa, beta, theta, gamma = [ getattr(other,x,None) for x in \
+                                     'alfa beta theta gamma'.split() ]
+        return self.alfa==alfa and \
+               self.beta==beta and \
+               self.gamma==gamma and \
+               self.theta==theta
+    @property
+    def _from(self): return self.alfa
+    @property
+    def _to(self): return self.beta
+
+    def __init__(self, alfa=None, beta=None, theta=None, gamma=None):
         self.expression = predicate.Obligation(s[alfa], s[beta], s[gamma])
         self.expression.alfa = alfa
         self.expression.beta = beta
         self.expression.gamma = gamma
-        self.alfa, self.beta, self.gamma = alfa, beta, gamma
+        self.expression.theta = theta
+        self.alfa, self.beta, self.gamma,self.theta = alfa, beta, gamma, theta
         super(Obligation,self).__init__(expression=self.expression, time=theta)
 
 class Decision(Obligation):
