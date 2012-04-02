@@ -5,11 +5,12 @@ from types import GeneratorType
 
 from spock.aima import Expr
 from spock import (predicate, symbol,
-                   Obligation, Doctrine,
-                   )#, s
+                   Obligation, Doctrine,)
+
 s = symbol
 
-class BasicTests(unittest.TestCase):
+class Common(unittest.TestCase):
+    """ """
     def assertExpression(self,other):
         return self.assertTrue(isinstance(other, Expr))
     def assertOpEqual(self, expr, name):
@@ -23,11 +24,13 @@ class BasicTests(unittest.TestCase):
         self.Mac = symbol.Mac
         self.Pete = symbol.Pete
 
+class BasicTests(Common):
     def test_implication_basic(self):
         z = ( self.Farmer(self.Mac) & self.Rabbit(self.Pete) >> \
               self.Hates(self.Mac, self.Pete) )
         self.assertExpression(z)
 
+class DoctrineTests(Common):
     def test_doctrine_basic(self):
         kb0 = Doctrine( [ self.Farmer(self.Mac),
                           self.Rabbit(self.Pete),
@@ -42,7 +45,6 @@ class BasicTests(unittest.TestCase):
         result = kb0.ask(self.Wife(self.Pete, s.x))
         self.assertTrue(not result)
 
-        # should be [Pete, Flopsie]
         all_solutions = kb0.consider(self.Hates(self.Mac, s.x), s.x)
         self.assertTrue(isinstance(all_solutions,GeneratorType))
         all_solutions = [z for z in all_solutions]
