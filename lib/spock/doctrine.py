@@ -39,16 +39,21 @@ class TemporalDoctrine(defaultdict):
         class TMP:
             """ """
             def __getitem__(himself, x):
-                """ returns { beta : obligation } """
+                """ returns { beta : obligation }
+                    actually obligation here is an expression representing that
+                    obligation, and not an obligation
+                """
                 results = defaultdict(lambda:[])
                 for t,doctrine in self.items():
                     clauses = filter(lambda clause: \
                                      all([clause.op=='Obligation',
-                                          getattr(clause,'alfa')==x]),
+                                          getattr(clause,'alfa', None)==x]),
                                      doctrine.clauses)
                     for clause in clauses:
-                        clause.time = t
-                        results[clause.beta].append(clause)
+                        obl = Obligation(alfa=clause.alfa, beta=clause.beta,
+                                   theta=clause.theta, gamma=clause.gamma)
+                        #clause.time = t
+                        results[clause.beta].append(obl)
                 return dict(results)
         return TMP()
 
