@@ -8,10 +8,14 @@ from spock.aima import FolKB
 class Doctrine(FolKB):
     """  a Doctrine is a collection of beliefs.
 
-         ask(q)::
-           returns the first answer or False
+         tell(sentence)::
+           stores a sentence in the knowledgebase.
+           any duplicates will raise an exception.
 
-         ask_generator(q)::
+         ask(sentence)::
+           returns the first answer or False.
+
+         ask_generator(sentence)::
            yields all solutions with all symbols/values
            combinations in their own dictionary.
 
@@ -19,6 +23,17 @@ class Doctrine(FolKB):
            yields all solutions as a flattened value,
            with respect to variable specified by  `wrt`
     """
+
+    class DuplicateSentence(ValueError):
+        pass
+
+    def tell(self, sentence):
+        # by default, FolKB allows duplicate sentences.
+        if sentence in self.clauses:
+            raise self.DuplicateSentence(str(sentence))
+        else:
+            return FolKB.tell(self, sentence)
+
     def consider(self, proposition, wrt=None):
         """ see Doctirne.__doc__ """
         results = self.ask_generator(proposition)
