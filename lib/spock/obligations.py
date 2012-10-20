@@ -20,7 +20,10 @@ class Theta(object):
         return "({code} @ {t})".format(code=str(self.expression), t=self.time)
 
 class Obligation(Theta):
-    """ Following Shoham:'94, an obligation is a 4-tuple
+    """
+        Obligation(A,B,G,T) implies A is obligated to B re: G at T
+
+        Following Shoham:'94, an obligation is a 4-tuple
         representing a directed commitment from alfa to beta
         about gamma at theta.  Typical conceptions about these
         data structures follows, but, for flexibility, not much
@@ -32,6 +35,10 @@ class Obligation(Theta):
 
     """
     def __init__(self, alfa=None, beta=None, gamma=None, theta=None,):
+        if any([theta is None,
+                theta==Now,
+                isinstance(theta, Now)]):
+            theta = datetime.datetime.now()
         self.expression = predicate.Obligation(s[alfa], s[beta], s[gamma])
         self.alfa  = self.expression.alfa  = alfa
         self.beta  = self.expression.beta  = beta
