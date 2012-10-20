@@ -90,7 +90,7 @@ class PropKB(KB):
             if c in self.clauses:
                 self.clauses.remove(c)
 
-class Expr:
+class Expr(object):
     """A symbolic mathematical expression.  We use this class for logical
     expressions, and for terms within logical expressions. In general, an
     Expr has an op (operator) and a list of args.  The op can be:
@@ -146,7 +146,7 @@ class Expr:
         """Self must be a symbol with no args, such as Expr('F').  Create a new
         Expr with 'F' as op and the args as arguments."""
         assert is_symbol(self.op) and not self.args
-        return Expr(self.op, *args)
+        return self.__class__(self.op, *args)
 
     def __repr__(self):
         "Show something like 'P' or 'P(x, y)', or '~P' or '(P | Q | R)'"
@@ -170,24 +170,24 @@ class Expr:
 
     # See http://www.python.org/doc/current/lib/module-operator.html
     # Not implemented: not, abs, pos, concat, contains, *item, *slice
-    def __lt__(self, other):     return Expr('<',  self, other)
-    def __le__(self, other):     return Expr('<=', self, other)
-    def __ge__(self, other):     return Expr('>=', self, other)
-    def __gt__(self, other):     return Expr('>',  self, other)
-    def __add__(self, other):    return Expr('+',  self, other)
-    def __sub__(self, other):    return Expr('-',  self, other)
-    def __and__(self, other):    return Expr('&',  self, other)
-    def __div__(self, other):    return Expr('/',  self, other)
-    def __truediv__(self, other):return Expr('/',  self, other)
-    def __invert__(self):        return Expr('~',  self)
-    def __lshift__(self, other): return Expr('<<', self, other)
-    def __rshift__(self, other): return Expr('>>', self, other)
-    def __mul__(self, other):    return Expr('*',  self, other)
-    def __neg__(self):           return Expr('-',  self)
-    def __or__(self, other):     return Expr('|',  self, other)
-    def __pow__(self, other):    return Expr('**', self, other)
-    def __xor__(self, other):    return Expr('^',  self, other)
-    def __mod__(self, other):    return Expr('<=>',  self, other) ## (x % y)
+    def __lt__(self, other):     return self.__class__('<',  self, other)
+    def __le__(self, other):     return self.__class__('<=', self, other)
+    def __ge__(self, other):     return self.__class__('>=', self, other)
+    def __gt__(self, other):     return self.__class__('>',  self, other)
+    def __add__(self, other):    return self.__class__('+',  self, other)
+    def __sub__(self, other):    return self.__class__('-',  self, other)
+    def __and__(self, other):    return self.__class__('&',  self, other)
+    def __div__(self, other):    return self.__class__('/',  self, other)
+    def __truediv__(self, other):return self.__class__('/',  self, other)
+    def __invert__(self):        return self.__class__('~',  self)
+    def __lshift__(self, other): return self.__class__('<<', self, other)
+    def __rshift__(self, other): return self.__class__('>>', self, other)
+    def __mul__(self, other):    return self.__class__('*',  self, other)
+    def __neg__(self):           return self.__class__('-',  self)
+    def __or__(self, other):     return self.__class__('|',  self, other)
+    def __pow__(self, other):    return self.__class__('**', self, other)
+    def __xor__(self, other):    return self.__class__('^',  self, other)
+    def __mod__(self, other):    return self.__class__('<=>',  self, other) ## (x % y)
 
 
 
@@ -360,6 +360,8 @@ def pl_true(exp, model={}):
     every proposition, this may return None to indicate 'not obvious';
     this may happen even when the expression is tautological."""
     op, args = exp.op, exp.args
+    if not len(args):
+        raise ValueError,'did you pass a simplex?'
     if exp == TRUE:
         return True
     elif exp == FALSE:
@@ -384,6 +386,7 @@ def pl_true(exp, model={}):
             if p == False: return False
             if p == None: result = None
         return result
+
     p, q = args
     if op == '>>':
         return pl_true(~p | q, model)
@@ -577,7 +580,7 @@ class PropHornKB(PropKB):
 
     def ask_generator(self, query):
         "Yield the empty substitution if KB implies query; else False"
-        if not pl_fc_entails(self.clauses, query):
+        if not pl_fc_entails(self, query):
             return
         yield {}
 
