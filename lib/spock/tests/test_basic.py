@@ -4,6 +4,7 @@ import unittest2 as unittest
 from types import GeneratorType
 
 from spock.aima import Expr
+from spock.simplex import Expression
 from spock import (predicate, symbol,
                    Obligation, Doctrine,)
 
@@ -27,12 +28,45 @@ RABBIT_LOGIC = [
 class Common(unittest.TestCase):
     """ """
     def assertExpression(self,other):
-        return self.assertTrue(isinstance(other, Expr))
-
+        return self.assertTrue(any([isinstance(other, Expr),
+                                    isinstance(other, Expression)]))
     def assertOpEqual(self, expr, name):
         return self.assertEqual(expr.op, name)
 
 class BasicTests(Common):
+
+    def setUp(self):
+        super(Common, self).setUp()
+        self.s1 = predicate.f(symbol.x, symbol.y)
+        self.complex_sentence = self.s1 | symbol.y
+
+    def test_simple(self):
+        self.assertTrue(predicate.F.simple)
+        self.assertTrue(symbol.x.simple)
+        self.assertTrue(not predicate.F(symbol.x).simple)
+
+    def test_solutions(self):
+        self.assertEqual(symbol.x.solutions,
+                         [{'x':True}])
+        self.assertEqual((symbol.x|symbol.y).solutions,
+                         [ dict(x=True),
+                           dict(y=True),
+                           dict(x=True,y=True),
+                           ]
+                           )
+
+    def test_simple_decompose(self):
+        sentence = self.complex_sentence
+        components = sentence.decompose()
+        self.assertEqual(components, [ self.s1, symbol.y ])
+
+    def test_complex_decompose(self):
+        blam = predicate.foo(symbol.a, symbol.b)
+        sentence = self.complex_sentence | blam
+        components = sentence.decompose()
+        self.assertEqual(components,
+                         [self.s1, symbol.y, blam])
+
     def test_implication_basic(self):
         z = ( is_farmer(Mac) & is_rabbit(Pete) >> \
               does_hate(Mac, Pete) )

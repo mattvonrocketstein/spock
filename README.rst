@@ -1,11 +1,14 @@
 What is this?
 -------------
 
-Python library for logic.  This is not intended to be a complete implementation and
-at this point it is certainly not written to be very fast.  It's mainly an experiment
-and might be useful to someone as a reference.  The code for first order logic is stolen
-directly from Norvig's "AI: A Modern Approach", with a few improvements to make it more
-pythonic.
+``Spock`` is a python library for logic.  This is not intended to be a complete implementation
+and at this point it is certainly not written to be very fast.  It's mainly an experiment
+and might be useful to someone as a reference.
+
+The backend codes for first order logic are stolen directly from Norvig's
+"AI: A Modern Approach", which itself is only intended to be illustrative, not industrial
+strength.  It illustrates logic ok but illustrates logic in python poorly so ``spock`` has
+a few improvements that make it more pythonic.
 
 Supports:
 
@@ -20,22 +23,37 @@ Wishlist:
 Examples
 --------
 
-  TODO: adapt from http://staff.washington.edu/jon/flip/www/witch.html
 
+  TODO: adapt more from nice pythonic http://staff.washington.edu/jon/flip/www/witch.html ?
+
+
+Installation
+-------------
+
+You'll need virtualenv and pip already installed, then run::
+
+  $ git clone http://github.com/mattvonrocketstein/spock.git
+  $ cd spock
+  $ virtualenv spock_test
+  $ source spock_test/bin/activate
+  $ python setup.py develop
 
 Running tests
 -------------
 
-after cloning the repository, simply run::
+Type this::
 
-  $ python lib/spock/tests
+  $ cd spock
+  $ virtualenv spock_test
+  $ source spock_test/bin/activate
+  $ pip install pytest
+  $ pytest -v lib/spock/tests
 
 Related Reading and Software
 ----------------------------
-LFI1: http://www.deamo.prof.ufu.br/arquivos/FLAIRS05AmoS.pdf
-
-FLIP: a logic framework in python
-http://staff.washington.edu/jon/flip/
-
-theorem prover example:
-http://www.blog.everythings-beta.com/?p=57
+  * LFI1: http://www.deamo.prof.ufu.br/arquivos/FLAIRS05AmoS.pdf
+  * FLIP: a logic framework in python http://staff.washington.edu/jon/flip/
+  * logic.py: http://truxler.net/robgfx/images/logic/tech_report.pdf
+  * theorem prover example: http://www.blog.everythings-beta.com/?p=57
+  * python bindings for a STP (a fast constraint-solving library) http://security.dico.unimi.it/~roberto/pystp/
+  * HigherOrderLogic, a classic, and a good collection of related links http://www.cl.cam.ac.uk/research/hvg/HOL/history.html

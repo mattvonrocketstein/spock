@@ -1,11 +1,11 @@
 """ spock.obligations
 """
 import datetime
-
+import inspect
 from spock.simplex import Expression, predicate, symbol, s
 
 class Time(object): pass
-class Now(Time): pass
+class Now(Time):    pass
 class Always(Time): pass
 
 class Theta(object):
@@ -13,8 +13,9 @@ class Theta(object):
     def __init__(self, expression=None, time=Time()):
         self.expression = expression
         self.time = time
-        if not isinstance(time, (Time, datetime.datetime)):
-            raise Exception,'Bad type for theta value'
+        if not any( [ isinstance(time, (Time, datetime.datetime)),
+                      inspect.isclass(time) and issubclass(time, Time) ] ):
+            raise Exception, 'Bad type for theta value: {0}'
 
     def __str__(self):
         return "({code} @ {t})".format(code=str(self.expression), t=self.time)

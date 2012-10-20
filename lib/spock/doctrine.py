@@ -28,10 +28,14 @@ class Doctrine(FolKB):
         pass
 
     def tell(self, sentence):
-        # by default, FolKB allows duplicate sentences.
+        # by default, FolKB allows duplicate sentences,
+        # but we will choose to disallow them as it adds
+        # no new information and just takes up space.
         if sentence in self.clauses:
             raise self.DuplicateSentence(str(sentence))
         else:
+            # NOTE: can't use super..
+            #   TypeError: super() argument 1 must be type, not classobj
             return FolKB.tell(self, sentence)
 
     def consider(self, proposition, wrt=None):
@@ -74,7 +78,7 @@ class TemporalDoctrine(defaultdict):
         return TMP()
 
     def __init__(self):
-        super(TemporalDoctrine,self).__init__(lambda:Doctrine())
+        super(TemporalDoctrine,self).__init__(lambda: Doctrine())
 
     def obligation(self, obl):
         self[obl.time].tell(obl.expression)
