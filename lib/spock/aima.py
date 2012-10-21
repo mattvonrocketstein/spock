@@ -1,29 +1,35 @@
-""" spock.aima (completely stolen from aima.logic source)
+""" spock.aima
 
-Representations and Inference for Logic (Chapters 7-10)
+    This file is almost completely stolen from aima.logic source code.
+    I implemented the rest of WalkSAT, fixed a few bugs and added some
+    new style classes, etc.
 
-Covers both Propositional and First-Order Logic. First we have four
-important data types:
+    Original file's comments follow:
 
-    KB            Abstract class holds a knowledge base of logical expressions
-    KB_Agent      Abstract class subclasses agents.Agent
-    Expr          A logical expression
-    substitution  Implemented as a dictionary of var:value pairs, {x:1, y:x}
+      Representations and Inference for Logic (Chapters 7-10)
 
-Be careful: some functions take an Expr as argument, and some take a KB.
-Then we implement various functions for doing logical inference:
+      Covers both Propositional and First-Order Logic. First we have four
+      important data types:
 
-    pl_true          Evaluate a propositional logical sentence in a model
-    tt_entails       Say if a statement is entailed by a KB
-    pl_resolution    Do resolution on propositional sentences
-    dpll_satisfiable See if a propositional sentence is satisfiable
-    WalkSAT          (not yet implemented)
+          KB            Abstract class holds a knowledge base of logical expressions
+          KB_Agent      Abstract class subclasses agents.Agent
+          Expr          A logical expression
+          substitution  Implemented as a dictionary of var:value pairs, {x:1, y:x}
 
-And a few other functions:
+      Be careful: some functions take an Expr as argument, and some take a KB.
+      Then we implement various functions for doing logical inference:
 
-    to_cnf           Convert to conjunctive normal form
-    unify            Do unification of two FOL sentences
-    diff, simp       Symbolic differentiation and simplification
+          pl_true          Evaluate a propositional logical sentence in a model
+          tt_entails       Say if a statement is entailed by a KB
+          pl_resolution    Do resolution on propositional sentences
+          dpll_satisfiable See if a propositional sentence is satisfiable
+          WalkSAT          (not yet implemented)
+
+      And a few other functions:
+
+          to_cnf           Convert to conjunctive normal form
+          unify            Do unification of two FOL sentences
+          diff, simp       Symbolic differentiation and simplification
 """
 
 import re
@@ -720,11 +726,11 @@ def WalkSAT(clauses, p=0.5, max_flips=10000):
     ## model is a random assignment of true/false to the symbols in clauses
     ## See ~/aima1e/print1/manual/knowledge+logic-answers.tex ???
 
-    all_symbosl = set()
+    all_symbols = set()
     for clause in clauses:
         for sym in prop_symbols(clause):
-            all_symbosl.add(sym)
-    model = dict( [ [sym, random.choice([True, False]) ] for sym in all_symbosl] )
+            all_symbols.add(sym)
+    model = dict( [ [sym, random.choice([True, False]) ] for sym in all_symbols] )
 
     for i in range(max_flips):
         satisfied, unsatisfied = [], []
@@ -735,29 +741,26 @@ def WalkSAT(clauses, p=0.5, max_flips=10000):
         clause = random.choice(unsatisfied)
         if probability(p):
             tmp = prop_symbols(clause)
-            #if not tmp:
-            #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+            assert tmp, 'Expected so-called "clause" would have some symbols..'
             sym = random.choice(tmp)
         else:
             ## Flip the symbol in clause that miximizes number of sat. clauses
             tally = []
-            for sym in all_symbosl:
+            for sym in all_symbols:
                 tmp_model = model.copy()
                 tmp_model[sym] = not tmp_model[sym]
+                # -1 if we break a clause that was satisified before, 0 for status quo
                 score1 = [ 0 if pl_true(clause, tmp_model) else -1 for clause in satisfied]
+                # +1 if we fix a clause that was satisified before, 0 for status quo
                 score2 = [ 1 if pl_true(clause, tmp_model) else 0 for clause in unsatisfied]
                 rank = sum(score1) + sum(score2)
                 tally.append([rank,sym])
             tally.sort()
             rank, sym = tally[-1]
-            #model[sym] = not model[sym]
-            #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
-            #raise NotImplementedError
         model[sym] = not model[sym]
 
 
 # PL-Wumpus-Agent [Fig. 7.19]
-
 def update_position(x, y, orientation, action):
     if action == 'TurnRight':
         orientation = turn_right(orientation)
