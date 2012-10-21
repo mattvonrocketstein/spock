@@ -227,7 +227,10 @@ def is_var_symbol(s):
 def is_prop_symbol(s):
     """A proposition logic symbol is an initial-uppercase string other than
     TRUE or FALSE."""
-    return is_symbol(s) and s[0].isupper() and s != 'TRUE' and s != 'FALSE'
+    return all([is_symbol(s),
+                #s[0].isupper()
+                s != 'TRUE',
+                s != 'FALSE'])
 
 def is_positive(s):
     """s is an unnegated logical expression
@@ -337,7 +340,7 @@ def tt_check_all(kb, alpha, symbols, model):
 def prop_symbols(x):
     "Return a list of all propositional symbols in x."
     if not isinstance(x, Expr):
-        return []
+        raise Exception,['wat',x] #return []
     elif is_prop_symbol(x.op):
         return [x]
     else:
@@ -361,7 +364,7 @@ def pl_true(exp, model={}):
     this may happen even when the expression is tautological."""
     op, args = exp.op, exp.args
     if not len(args):
-        raise ValueError,'did you pass a simplex?'
+        return model.get(op, model.get(exp, False))
     if exp == TRUE:
         return True
     elif exp == FALSE:
@@ -598,8 +601,9 @@ class PropHornKB(PropKB):
 
 def pl_fc_entails(KB, q):
     """Use forward chaining to see if a HornKB entails symbol q. [Fig. 7.14]
-    >>> pl_fc_entails(Fig[7,15], expr('Q'))
-    True
+       This doesn't seem to work at all non-atomic expressions
+        >>> pl_fc_entails(Fig[7,15], expr('Q'))
+        True
     """
     count = dict([(c, len(conjuncts(c.args[0]))) for c in KB.clauses
                                                  if c.op == '>>'])
@@ -715,8 +719,13 @@ def literal_symbol(literal):
 def WalkSAT(clauses, p=0.5, max_flips=10000):
     ## model is a random assignment of true/false to the symbols in clauses
     ## See ~/aima1e/print1/manual/knowledge+logic-answers.tex ???
-    model = dict([(s, random.choice([True, False]))
-                 for s in prop_symbols(clauses)])
+
+    all_symbosl = set()
+    for clause in clauses:
+        for sym in prop_symbols(clause):
+            all_symbosl.add(sym)
+    model = dict( [ [sym, random.choice([True, False]) ] for sym in all_symbosl] )
+
     for i in range(max_flips):
         satisfied, unsatisfied = [], []
         for clause in clauses:
@@ -725,10 +734,25 @@ def WalkSAT(clauses, p=0.5, max_flips=10000):
             return model
         clause = random.choice(unsatisfied)
         if probability(p):
-            sym = random.choice(prop_symbols(clause))
+            tmp = prop_symbols(clause)
+            #if not tmp:
+            #    from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+            sym = random.choice(tmp)
         else:
             ## Flip the symbol in clause that miximizes number of sat. clauses
-            raise NotImplementedError
+            tally = []
+            for sym in all_symbosl:
+                tmp_model = model.copy()
+                tmp_model[sym] = not tmp_model[sym]
+                score1 = [ 0 if pl_true(clause, tmp_model) else -1 for clause in satisfied]
+                score2 = [ 1 if pl_true(clause, tmp_model) else 0 for clause in unsatisfied]
+                rank = sum(score1) + sum(score2)
+                tally.append([rank,sym])
+            tally.sort()
+            rank, sym = tally[-1]
+            #model[sym] = not model[sym]
+            #from IPython import Shell; Shell.IPShellEmbed(argv=['-noconfirm_exit'])()
+            #raise NotImplementedError
         model[sym] = not model[sym]
 
 
