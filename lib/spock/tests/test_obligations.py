@@ -25,11 +25,15 @@ class ObligationTests(Common):
         self.assertTrue(o.alfa, John)
         self.assertTrue(o.beta, Jane)
 
-    def test_equality(self):
+    def test_equality_positive(self):
         # different instances should be equal as long as the parts are equal
         o1 = Obligation(John, Jane, self.expression, Always)
         o2 = Obligation(John, Jane, self.expression, Always)
-        self.assertTrue(o1==o2)
+        self.assertTrue(o1 == o2)
+        # .. but we don't cache instances
+        self.assertTrue(id(o1) != id(o2))
+
+    def test_equality_negative(self):
         # these instances should be unequal because times do not match exactly
         o1 = Obligation(John, Jane, self.expression, Now)
         o2 = Obligation(John, Jane, self.expression, Now)
