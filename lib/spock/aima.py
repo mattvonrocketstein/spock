@@ -37,7 +37,7 @@ from spock.utils import *
 
 #______________________________________________________________________________
 
-class KB:
+class KB(object):
     """A Knowledge base to which you can tell and ask sentences.
     To create a KB, first subclass this class and implement
     tell, ask_generator, and retract.  Why ask_generator instead of ask?
@@ -76,25 +76,25 @@ class PropKB(KB):
     "A KB for Propositional Logic.  Inefficient, with no indexing."
 
     def __init__(self, sentence=None):
-        self.clauses = []
+        self._clauses = []
         if sentence:
             self.tell(sentence)
 
     def tell(self, sentence):
         "Add the sentence's clauses to the KB"
-        self.clauses.extend(conjuncts(to_cnf(sentence)))
+        self._clauses.extend(conjuncts(to_cnf(sentence)))
 
     def ask_generator(self, query):
         "Yield the empty substitution if KB implies query; else False"
-        if not tt_entails(Expr('&', *self.clauses), query):
+        if not tt_entails(Expr('&', *self._clauses), query):
             return
         yield {}
 
     def retract(self, sentence):
         "Remove the sentence's clauses from the KB"
         for c in conjuncts(to_cnf(sentence)):
-            if c in self.clauses:
-                self.clauses.remove(c)
+            if c in self._clauses:
+                self._clauses.remove(c)
 
 class Expr(object):
     """A symbolic mathematical expression.  We use this class for logical
@@ -546,7 +546,7 @@ def disjuncts(s):
 
 def pl_resolution(KB, alpha):
     "Propositional Logic Resolution: say if alpha follows from KB. [Fig. 7.12]"
-    clauses = KB.clauses + conjuncts(to_cnf(~alpha))
+    clauses = KB._clauses + conjuncts(to_cnf(~alpha))
     new = set()
     while True:
         n = len(clauses)
@@ -585,7 +585,7 @@ class PropHornKB(PropKB):
         "Add a Horn Clauses to this KB."
         op = sentence.op
         assert op == '>>' or is_prop_symbol(op), "Must be Horn Clause"
-        self.clauses.append(sentence)
+        self._clauses.append(sentence)
 
     def ask_generator(self, query):
         "Yield the empty substitution if KB implies query; else False"
@@ -596,13 +596,13 @@ class PropHornKB(PropKB):
     def retract(self, sentence):
         "Remove the sentence's clauses from the KB"
         for c in conjuncts(to_cnf(sentence)):
-            if c in self.clauses:
-                self.clauses.remove(c)
+            if c in self._clauses:
+                self._clauses.remove(c)
 
     def clauses_with_premise(self, p):
         """The list of clauses in KB that have p in the premise.
         This could be cached away for O(1) speed, but we'll recompute it."""
-        return [c for c in self.clauses
+        return [c for c in self._clauses
                 if c.op == '>>' and p in conjuncts(c.args[0])]
 
 def pl_fc_entails(KB, q):
@@ -611,10 +611,10 @@ def pl_fc_entails(KB, q):
         >>> pl_fc_entails(Fig[7,15], expr('Q'))
         True
     """
-    count = dict([(c, len(conjuncts(c.args[0]))) for c in KB.clauses
+    count = dict([(c, len(conjuncts(c.args[0]))) for c in KB._clauses
                                                  if c.op == '>>'])
     inferred = DefaultDict(False)
-    agenda = [s for s in KB.clauses if is_prop_symbol(s.op)]
+    agenda = [s for s in KB._clauses if is_prop_symbol(s.op)]
     if q in agenda: return True
     while agenda:
         p = agenda.pop()
@@ -870,7 +870,7 @@ def fol_fc_ask(KB, alpha):
     KB is an FOLHornKB and alpha must be an atomic sentence."""
     while True:
         new = {}
-        for r in KB.clauses:
+        for r in KB._clauses:
             r1 = standardize_apart(r)
             ps, q = conjuncts(r.args[0]), r.args[1]
             raise NotImplementedError
@@ -917,13 +917,13 @@ class FolKB (KB):
     """
 
     def __init__ (self, initial_clauses=[]):
-        self.clauses = [] # inefficient: no indexing
+        self._clauses = [] # inefficient: no indexing
         for clause in initial_clauses:
             self.tell(clause)
 
     def tell(self, sentence):
         if is_definite_clause(sentence):
-            self.clauses.append(sentence)
+            self._clauses.append(sentence)
         else:
             raise Exception("Not a definite clause: %s" % sentence)
 
@@ -931,7 +931,7 @@ class FolKB (KB):
         return fol_bc_ask(self, [query])
 
     def retract(self, sentence):
-        self.clauses.remove(sentence)
+        self._clauses.remove(sentence)
 
 def test_ask(q):
     e = expr(q)
@@ -982,7 +982,7 @@ def fol_bc_ask(KB, goals, theta={}):
 
     q1 = subst(theta, goals[0])
 
-    for r in KB.clauses:
+    for r in KB._clauses:
         sar = standardize_apart(r)
 
         # Split into head and body
