@@ -5,12 +5,14 @@ What is this?
 and at this point it is certainly not written to be very fast.  It's mainly an experiment
 and might be useful to someone as a reference.
 
-The backend codes for first order logic are stolen directly from Norvig's
+The backend codes for first order logic are mostly stolen from Norvig's
 "AI: A Modern Approach", which itself is only intended to be illustrative, not industrial
-strength.  It illustrates logic ok but illustrates logic in python poorly so ``spock`` has
-a few improvements that make it more pythonic.
+strength.  It illustrates logic pretty well, but illustrates logic in python poorly.
+``Spock`` includes some improvements that make it more pythonic.  I've also fixed what
+bugs I found, and implemented stuff that the margins were originally too narrow to contain
+(WalkSAT).
 
-Supports:
+Spock Supports:
 
   - First Order Logic [via AI:MA]
   - Agent logic (obligations, decisions) [following Shoham '94]
@@ -47,7 +49,7 @@ Type this::
   $ virtualenv spock_test
   $ source spock_test/bin/activate
   $ pip install pytest
-  $ pytest -v lib/spock/tests
+  $ pytest -v -t lib/spock/tests
 
 Related Reading and Software
 ----------------------------
