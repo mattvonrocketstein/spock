@@ -12,7 +12,7 @@ except ImportError:
     from distutils.core import setup
     def find_packages():
         return [
-            'hammock',
+            'spock',
         ]
     have_setuptools = False
 
@@ -24,11 +24,11 @@ except ImportError:
 if have_setuptools:
     add_keywords = dict( entry_points = \
                          {
-                             #'console_scripts': \
-                             #['spock = spock.bin.spock:entry', ]
+                             'console_scripts': \
+                             ['spock = spock.bin.spock:entry', ]
                          }, )
 else:
-    pass #add_keywords = dict( scripts = ['spock'], )
+    add_keywords = dict( scripts = ['spock'], )
 
 
 setup(
