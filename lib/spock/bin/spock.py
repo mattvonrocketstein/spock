@@ -1,3 +1,5 @@
+""" spock.bin.spock
+"""
 
 def entry():
     namespace={}
