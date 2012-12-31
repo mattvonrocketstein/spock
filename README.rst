@@ -5,20 +5,20 @@ What is this?
 and at this point it is certainly not written to be very fast.  It's mainly an experiment
 and might be useful to someone as a reference.
 
-The backend codes for first order logic are mostly stolen from Norvig's
-"AI: A Modern Approach", which itself is only intended to be illustrative, not industrial
-strength.  It illustrates logic pretty well, but illustrates logic in python poorly.
-``Spock`` includes some improvements that make it more pythonic.  I've also fixed what
-bugs I found, and implemented stuff that the margins were originally too narrow to contain
-(WalkSAT).
+The backend codes for first order logic are mostly stolen from Russel & Norvig's
+"AI: A Modern Approach", and even the approach there is only intended to be illustrative
+rather than industrial strength.  That code illustrates logic pretty well, but illustrates
+*logic in python* pretty poorly.  ``Spock`` includes some improvements that make it more
+pythonic.  I've also fixed what bugs I found, and implemented stuff that the margins were
+originally too narrow to contain (e.g. WalkSAT).
 
-Spock Supports:
+Spock Supports::
 
   - First Order Logic [via AI:MA]
   - Agent logic (obligations, decisions) [following Shoham '94]
   - Temporal logic (very crude, very in-progress)
 
-Wishlist:
+Wishlist::
 
   - Paraconsistent Logic [maybe following LFI1: A 3-valued Logic for Formal Inconsistency]
 
