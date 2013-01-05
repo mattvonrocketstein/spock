@@ -1,19 +1,26 @@
-""" spock/lib/spock/aima/csp
+""" spock.aima.csp
+
     This file is almost completely stolen from aima.logic source code.
 
-    I updated the code for more recent versions of python..
+    I cleaned things and updated the code for more recent versions of python..
 
-      1) no need to get generators from__future
+      0) no *-imports
+      1) no need to get generators from __future__.
       2) no need to define DefaultDict when defaultdict can
-          now be imported from the collections module.
+         now be imported from the collections module.
+      3) move the Zebra puzzle outside of this code and into unittest suite
+         (see spock.tests.test_constraints.TestAIMA for more information)
 
     Original file's comments follow:
 """
 """CSP (Constraint Satisfaction Problems) problems and solvers. (Chapter 5)."""
 
 import random
-from spock.aima.utils import update,count_if,argmin_random_tie,every,find_if,random_tests
+from collections import defaultdict
 from spock.aima import search
+from spock.aima.utils import (update, count_if, argmin_random_tie,
+                              every,find_if, random_tests)
+
 
 class CSP(search.Problem):
     """This class describes finite-domain Constraint Satisfaction Problems.
@@ -279,7 +286,7 @@ def MapColoringCSP(colors, neighbors):
         neighbors = parse_neighbors(neighbors)
     return CSP(neighbors.keys(), UniversalDict(colors), neighbors,
                different_values_constraint)
-from collections import defaultdict
+
 def parse_neighbors(neighbors, vars=[]):
     """Convert a string of the form 'X: Y Z; Y: Z' into a dict mapping
     regions to neighbors.  The syntax is a region name followed by a ':'
@@ -395,70 +402,3 @@ class NQueensCSP(CSP):
                 else: ch = ' '
                 print str(self.nconflicts(var, val, assignment))+ch,
             print
-
-#______________________________________________________________________________
-# The Zebra Puzzle
-
-def Zebra():
-    "Return an instance of the Zebra Puzzle."
-    Colors = 'Red Yellow Blue Green Ivory'.split()
-    Pets = 'Dog Fox Snails Horse Zebra'.split()
-    Drinks = 'OJ Tea Coffee Milk Water'.split()
-    Countries = 'Englishman Spaniard Norwegian Ukranian Japanese'.split()
-    Smokes = 'Kools Chesterfields Winston LuckyStrike Parliaments'.split()
-    vars = Colors + Pets + Drinks + Countries + Smokes
-    domains = {}
-    for var in vars:
-        domains[var] = range(1, 6)
-    domains['Norwegian'] = [1]
-    domains['Milk'] = [3]
-    neighbors = parse_neighbors("""Englishman: Red;
-                Spaniard: Dog; Kools: Yellow; Chesterfields: Fox;
-                Norwegian: Blue; Winston: Snails; LuckyStrike: OJ;
-                Ukranian: Tea; Japanese: Parliaments; Kools: Horse;
-                Coffee: Green; Green: Ivory""", vars)
-    for type in [Colors, Pets, Drinks, Countries, Smokes]:
-        for A in type:
-            for B in type:
-                if A != B:
-                    if B not in neighbors[A]: neighbors[A].append(B)
-                    if A not in neighbors[B]: neighbors[B].append(A)
-    def zebra_constraint(A, a, B, b, recurse=0):
-        same = (a == b)
-        next_to = abs(a - b) == 1
-        if A == 'Englishman' and B == 'Red': return same
-        if A == 'Spaniard' and B == 'Dog': return same
-        if A == 'Chesterfields' and B == 'Fox': return next_to
-        if A == 'Norwegian' and B == 'Blue': return next_to
-        if A == 'Kools' and B == 'Yellow': return same
-        if A == 'Winston' and B == 'Snails': return same
-        if A == 'LuckyStrike' and B == 'OJ': return same
-        if A == 'Ukranian' and B == 'Tea': return same
-        if A == 'Japanese' and B == 'Parliaments': return same
-        if A == 'Kools' and B == 'Horse': return next_to
-        if A == 'Coffee' and B == 'Green': return same
-        if A == 'Green' and B == 'Ivory': return (a - 1) == b
-        if recurse == 0: return zebra_constraint(B, b, A, a, 1)
-        if ((A in Colors and B in Colors) or
-            (A in Pets and B in Pets) or
-            (A in Drinks and B in Drinks) or
-            (A in Countries and B in Countries) or
-            (A in Smokes and B in Smokes)): return not same
-        raise 'error'
-    return CSP(vars, domains, neighbors, zebra_constraint)
-
-def solve_zebra(algorithm=min_conflicts, **args):
-    z = Zebra()
-    ans = algorithm(z, **args)
-    for h in range(1, 6):
-        print 'House', h,
-        for (var, val) in ans.items():
-            if val == h: print var,
-        print
-    return ans['Zebra'], ans['Water'], z.nassigns, ans
-
-
-__doc__ += random_tests("""
->>> min_conflicts(australia)
-{'WA': 'B', 'Q': 'B', 'T': 'G', 'V': 'B', 'SA': 'R', 'NT': 'G', 'NSW': 'G'}
-""")
