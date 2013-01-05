@@ -15,7 +15,7 @@ functions.
 
 from spock.aima.utils import *
 from spock.aima import agents
-import math, random, sys, time, bisect, string
+import math, random, sys, bisect
 
 #______________________________________________________________________________
 

@@ -656,7 +656,7 @@ class Queue:
     as lists.  If Python ever gets interfaces, Queue will be an interface."""
 
     def __init__(self):
-        abstract
+        raise NotImplemented
 
     def extend(self, items):
         for item in items: self.append(item)
