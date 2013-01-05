@@ -1,11 +1,12 @@
-""" spock.aima
+""" spock.aima.logic
 
     This file is almost completely stolen from aima.logic source code.
     I implemented the rest of WalkSAT, fixed a few bugs and added some
     new style classes, etc.
 
     Original file's comments follow:
-
+"""
+"""
       Representations and Inference for Logic (Chapters 7-10)
 
       Covers both Propositional and First-Order Logic. First we have four
