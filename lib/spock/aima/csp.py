@@ -12,14 +12,15 @@
          (see spock.tests.test_constraints.TestAIMA for more information)
 
     Original file's comments follow:
+      CSP (Constraint Satisfaction Problems) problems and solvers. (Chapter 5).
 """
-"""CSP (Constraint Satisfaction Problems) problems and solvers. (Chapter 5)."""
 
 import random
 from collections import defaultdict
 from spock.aima import search
-from spock.aima.utils import (update, count_if, argmin_random_tie,
-                              every,find_if, random_tests)
+from spock.aima.utils import (update, count_if,
+                              argmin_random_tie,
+                              every,find_if )
 
 
 class CSP(search.Problem):
