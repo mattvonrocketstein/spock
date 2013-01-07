@@ -46,14 +46,14 @@ class BasicTests(Common):
         self.assertTrue(not predicate.F(symbol.x).simple)
 
     def test_solutions(self):
-        self.assertEqual(symbol.x.solutions,
+        self.assertEqual(symbol.x.solution,
                          [{'x':True}])
-        self.assertEqual((symbol.x|symbol.y).solutions,
-                         [ dict(x=True),
-                           dict(y=True),
-                           dict(x=True,y=True),
-                           ]
-                           )
+        x,y = symbol.x, symbol.y
+        sol = (x|y).solution
+        self.assertTrue(sol in
+                        [ {x:True,y:False},
+                          {y:True,x:False},
+                           {x:True,y:True},] )
 
     def test_simple_decompose(self):
         sentence = self.complex_sentence
