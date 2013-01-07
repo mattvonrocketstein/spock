@@ -68,7 +68,7 @@ class TemporalDoctrine(defaultdict):
                     clauses = filter(lambda clause: \
                                      all([clause.op=='Obligation',
                                           getattr(clause,'alfa', None)==x]),
-                                     doctrine.clauses)
+                                     doctrine._clauses)
                     for clause in clauses:
                         obl = Obligation(alfa=clause.alfa, beta=clause.beta,
                                    theta=clause.theta, gamma=clause.gamma)
