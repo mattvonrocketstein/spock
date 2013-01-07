@@ -2,7 +2,7 @@
 
     This file is almost completely stolen from aima.logic source code.
 
-    I cleaned things and updated the code for more recent versions of python..
+    I cleaned things and updated the code for more recent versions of python-
 
       0) no *-imports
       1) no need to get generators from __future__.

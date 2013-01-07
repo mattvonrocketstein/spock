@@ -31,7 +31,7 @@ class Doctrine(FolKB):
         # by default, FolKB allows duplicate sentences,
         # but we will choose to disallow them as it adds
         # no new information and just takes up space.
-        if sentence in self.clauses:
+        if sentence in self._clauses:
             raise self.DuplicateSentence(str(sentence))
         else:
             # NOTE: can't use super..

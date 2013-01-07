@@ -32,12 +32,14 @@ class Expression(Expr):
             return out
 
     @property
-    def solutions(self):
+    def solution(self):
         # TODO: caching
         if self.simple:
             return [ {self.op : True} ]
         else:
-            return []
+            from spock.aima.logic import WalkSAT
+            return WalkSAT([self])
+
     @property
     def simple(self):
         # TODO: increasingly bad module name

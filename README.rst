@@ -12,11 +12,16 @@ rather than industrial strength.  That code illustrates logic pretty well, but i
 pythonic.  I've also fixed what bugs I found, and implemented stuff that the margins were
 originally too narrow to contain (e.g. WalkSAT).
 
+The constraint solving code is also AI:MA code that has been rearranged and updated.  I
+added utility classes for quickly drawing up and solving constraint problems, so it's
+easier to work with.
+
 Spock Supports::
 
   - First Order Logic [via AI:MA]
   - Agent logic (obligations, decisions) [following Shoham '94]
   - Temporal logic (very crude, very in-progress)
+  - Constraint solving
 
 Wishlist::
 
