@@ -6,7 +6,9 @@ from spock.aima import CSP, backtracking_search
 class InconsistentConstraints(Exception): pass
 
 class BootOrderProblem(object):
-    """ solves the "boot order" problem, aka dependency consistency, etc. """
+    """ solves the "boot order" problem, aka dependency consistency, etc.
+        this class is just a more convenient interface aima's CSP
+    """
     InconsistentConstraints = InconsistentConstraints
 
     def __init__(self, constraint_table, csp_algorithm=None):
@@ -34,7 +36,7 @@ class BootOrderProblem(object):
             itself
         """
         return dict([ [service, [service2 for service2 in self.vars if \
-                                 service2!=service]] for service in self.vars ])
+                                 service2!=service] ] for service in self.vars ])
 
     @property
     def vars(self):
