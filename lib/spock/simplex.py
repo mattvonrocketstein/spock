@@ -33,6 +33,7 @@ class Expression(Expr):
 
     @property
     def solution(self):
+        """ NB: nondeterministic! no guarantee you get the same solution each time """
         # TODO: caching
         if self.simple:
             return [ {self.op : True} ]

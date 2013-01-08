@@ -51,9 +51,9 @@ class BasicTests(Common):
         x,y = symbol.x, symbol.y
         sol = (x|y).solution
         self.assertTrue(sol in
-                        [ {x:True,y:False},
-                          {y:True,x:False},
-                           {x:True,y:True},] )
+                        [ {x:True, y:False},
+                          {y:True, x:False},
+                          {x:True, y:True},] )
 
     def test_simple_decompose(self):
         sentence = self.complex_sentence

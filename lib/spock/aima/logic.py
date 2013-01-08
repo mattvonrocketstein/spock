@@ -1123,68 +1123,6 @@ def d(y, x):
     "Differentiate and then simplify."
     return simp(diff(y, x))
 
-#_______________________________________________________________________________
-
-# Utilities for doctest cases
-# These functions print their arguments in a standard order
-# to compensate for the random order in the standard representation
-
-def pretty(x):
-    t = type(x)
-    if t == dict:
-        return pretty_dict(x)
-    elif t == set:
-        return pretty_set(x)
-
-def pretty_dict(d):
-    """Print the dictionary d.
-
-    Prints a string representation of the dictionary
-    with keys in sorted order according to their string
-    representation: {a: A, d: D, ...}.
-    >>> pretty_dict({'m': 'M', 'a': 'A', 'r': 'R', 'k': 'K'})
-    "{'a': 'A', 'k': 'K', 'm': 'M', 'r': 'R'}"
-    >>> pretty_dict({z: C, y: B, x: A})
-    '{x: A, y: B, z: C}'
-    """
-
-    def format(k, v):
-        return "%s: %s" % (repr(k), repr(v))
-
-    ditems = d.items()
-    ditems.sort(key=str)
-    k, v = ditems[0]
-    dpairs = format(k, v)
-    for (k, v) in ditems[1:]:
-        dpairs += (', ' + format(k, v))
-    return '{%s}' % dpairs
-
-def pretty_set(s):
-    """Print the set s.
-
-    >>> pretty_set(set(['A', 'Q', 'F', 'K', 'Y', 'B']))
-    "set(['A', 'B', 'F', 'K', 'Q', 'Y'])"
-    >>> pretty_set(set([z, y, x]))
-    'set([x, y, z])'
-    """
-
-    slist = list(s)
-    slist.sort(key=str)
-    return 'set(%s)' % slist
-
-def pp(x):
-    print pretty(x)
-
-def ppsubst(s):
-    """Pretty-print substitution s"""
-    ppdict(s)
-
-def ppdict(d):
-    print pretty_dict(d)
-
-def ppset(s):
-    print pretty_set(s)
-
 #________________________________________________________________________
 
 class logicTest: """

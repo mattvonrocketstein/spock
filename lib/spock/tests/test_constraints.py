@@ -1,7 +1,7 @@
 """ spock.tests.test_constraints
 """
 import unittest2 as unittest
-from spock.aima import BootOrderProblem
+from spock.constraints import BootOrderProblem
 from spock.aima.csp import backtracking_search, CSP, parse_neighbors
 
 class TestConstraints(unittest.TestCase):
