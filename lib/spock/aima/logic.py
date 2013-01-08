@@ -293,10 +293,7 @@ A, B, C, F, G, P, Q, x, y, z  = map(Expr, 'ABCFGPQxyz')
 #______________________________________________________________________________
 
 def tt_entails(kb, alpha):
-    """Use truth tables to determine if KB entails sentence alpha. [Fig. 7.10]
-    >>> tt_entails(expr('P & Q'), expr('Q'))
-    True
-    """
+    """Use truth tables to determine if KB entails sentence alpha. [Fig. 7.10]"""
     return tt_check_all(kb, alpha, prop_symbols(kb & alpha), {})
 
 def tt_check_all(kb, alpha, symbols, model):
@@ -325,10 +322,7 @@ def prop_symbols(x):
         return list(s)
 
 def tt_true(alpha):
-    """Is the sentence alpha a tautology? (alpha will be coerced to an expr.)
-    >>> tt_true(expr("(P >> Q) <=> (~P | Q)"))
-    True
-    """
+    """Is the sentence alpha a tautology? (alpha will be coerced to an expr.)"""
     return tt_entails(TRUE, expr(alpha))
 
 def pl_true(exp, model={}):
@@ -402,10 +396,8 @@ def to_cnf(s):
     return distribute_and_over_or(s) # Step 4
 
 def eliminate_implications(s):
-    """Change >>, <<, and <=> into &, |, and ~. That is, return an Expr
-    that is equivalent to s, but has only &, |, and ~ as logical operators.
-    >>> eliminate_implications(A >> (~B << C))
-    ((~B | ~C) | ~A)
+    """ Change >>, <<, and <=> into &, |, and ~. That is, return an Expr
+        that is equivalent to s, but has only &, |, and ~ as logical operators.
     """
     if not s.args or is_symbol(s.op): return s     ## (Atoms are unchanged.)
     args = map(eliminate_implications, s.args)
@@ -420,14 +412,7 @@ def eliminate_implications(s):
         return Expr(s.op, *args)
 
 def move_not_inwards(s):
-    """Rewrite sentence s by moving negation sign inward.
-    >>> move_not_inwards(~(A | B))
-    (~A & ~B)
-    >>> move_not_inwards(~(A & B))
-    (~A | ~B)
-    >>> move_not_inwards(~(~(A | ~B) | ~~C))
-    ((A | ~B) & ~C)
-    """
+    """ Rewrite sentence s by moving negation sign inward. """
     if s.op == '~':
         NOT = lambda b: move_not_inwards(~b)
         a = s.args[0]
@@ -441,10 +426,8 @@ def move_not_inwards(s):
         return Expr(s.op, *map(move_not_inwards, s.args))
 
 def distribute_and_over_or(s):
-    """Given a sentence s consisting of conjunctions and disjunctions
-    of literals, return an equivalent sentence in CNF.
-    >>> distribute_and_over_or((A & B) | C)
-    ((A | C) & (B | C))
+    """ Given a sentence s consisting of conjunctions and disjunctions
+        of literals, return an equivalent sentence in CNF.
     """
     if s.op == '|':
         s = NaryExpr('|', *s.args)
@@ -472,8 +455,6 @@ _NaryExprTable = {'&':TRUE, '|':FALSE, '+':ZERO, '*':ONE}
 def NaryExpr(op, *args):
     """Create an Expr, but with an nary, associative op, so we can promote
     nested instances of the same op up to the top level.
-    >>> NaryExpr('&', (A&B),(B|C),(B&C))
-    (A & B & (B | C) & B & C)
     """
     arglist = []
     for arg in args:

@@ -5,6 +5,8 @@ from unittest2 import TestCase
 from spock.aima.logic import dpll_satisfiable
 from spock.aima.logic import (conjuncts, disjuncts, prop_symbols,
                               PropKB,to_cnf,expr,is_positive,literals,
+                              tt_entails,tt_true,eliminate_implications,
+                              move_not_inwards,distribute_and_over_or,
                               is_literal, is_definite_clause,variables)
 from spock import symbol, predicate
 _ = symbol
@@ -30,6 +32,31 @@ class TestLogic(FailingTests, TestCase):
         namespace.pop('self')
         for x in namespace:
             setattr(self,x,namespace[x])
+
+    def test_distribute_and_over_or(self):
+        self.assertEqual(distribute_and_over_or((_.A & _.B) | _.C),
+                         ((_.A | _.C) & (_.B | _.C)))
+
+    def test_move_not_inwards(self):
+        self.assertEqual(move_not_inwards(~(_.A | _.B)),
+                         expr('(~A & ~B)'))
+        self.assertEqual(
+            move_not_inwards(~(_.A & _.B)),
+            expr('(~A | ~B)'))
+        self.assertEqual(
+            move_not_inwards(expr('~(~(A | ~B) | ~~C)')),
+            expr('((A | ~B) & ~C)'))
+
+    def test_eliminate_implications(self):
+        self.assertEqual(eliminate_implications(_.A >> (~_.B << _.C)),
+                         expr('((~B | ~C) | ~A)'))
+
+    def test_tt_entails(self):
+        self.assertEqual(tt_entails(expr('P & Q'), expr('Q')),
+                         True)
+    def test_tt_true(self):
+        self.assertTrue(tt_true(expr("(P >> Q) <=> (~P | Q)")),
+                        True)
 
     def test_is_definite_clause(self):
         self.assertEqual(
