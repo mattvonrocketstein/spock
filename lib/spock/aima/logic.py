@@ -1,8 +1,13 @@
 """ spock.aima.logic
 
     This file is almost completely stolen from aima.logic source code.
-    I implemented the rest of WalkSAT, fixed a few bugs and added some
-    new style classes, etc.
+
+    Changes:
+      1) fixed a few bugs
+      2) added some new style classes
+      3) implemented the rest of WalkSAT,
+      4) removed crufty symbolic algebra because it's not
+         logic and the implementation was awful anyway
 
     Original file's comments follow:
 """
@@ -30,7 +35,6 @@
 
           to_cnf           Convert to conjunctive normal form
           unify            Do unification of two FOL sentences
-          diff, simp       Symbolic differentiation and simplification
 """
 
 import re
@@ -232,51 +236,25 @@ def is_var_symbol(s):
     return is_symbol(s) and s[0].islower()
 
 def is_prop_symbol(s):
-    """A proposition logic symbol is an initial-uppercase string other than
-    TRUE or FALSE."""
+    """ A proposition logic symbol is an
+        initial-uppercase string other than
+        TRUE or FALSE.
+    """
     return all([is_symbol(s),
                 #s[0].isupper()
                 s != 'TRUE',
                 s != 'FALSE'])
 
 def is_positive(s):
-    """s is an unnegated logical expression
-    >>> is_positive(expr('F(A, B)'))
-    True
-    >>> is_positive(expr('~F(A, B)'))
-    False
-    """
+    """is s an unnegated logical expression? """
     return s.op != '~'
 
-def is_negative(s):
-    """s is a negated logical expression
-    >>> is_negative(expr('F(A, B)'))
-    False
-    >>> is_negative(expr('~F(A, B)'))
-    True
-    """
-    return s.op == '~'
-
 def is_literal(s):
-    """s is a FOL literal
-    >>> is_literal(expr('~F(A, B)'))
-    True
-    >>> is_literal(expr('F(A, B)'))
-    True
-    >>> is_literal(expr('F(A, B) & G(B, C)'))
-    False
-    """
+    """is s a FOL literal? """
     return is_symbol(s.op) or (s.op == '~' and is_literal(s.args[0]))
 
 def literals(s):
-    """returns the list of literals of logical expression s.
-    >>> literals(expr('F(A, B)'))
-    [F(A, B)]
-    >>> literals(expr('~F(A, B)'))
-    [~F(A, B)]
-    >>> literals(expr('(F(A, B) & G(B, C)) ==> R(A, C)'))
-    [F(A, B), G(B, C), R(A, C)]
-    """
+    """returns the list of literals of logical expression s.  """
     op = s.op
     if op in set(['&', '|', '<<', '>>', '%', '^']):
         result = []
@@ -290,10 +268,6 @@ def literals(s):
 
 def variables(s):
     """returns the set of variables in logical expression s.
-    >>> ppset(variables(F(x, A, y)))
-    set([x, y])
-    >>> ppset(variables(expr('F(x, x) & G(x, y) & H(y, z) & R(A, z, z)')))
-    set([x, y, z])
     """
     if is_literal(s):
         return set([v for v in s.args if is_variable(v)])
@@ -307,14 +281,6 @@ def is_definite_clause(s):
     """returns True for exprs s of the form A & B & ... & C ==> D,
     where all literals are positive.  In clause form, this is
     ~A | ~B | ... | ~C | D, where exactly one clause is positive.
-    >>> is_definite_clause(expr('Farmer(Mac)'))
-    True
-    >>> is_definite_clause(expr('~Farmer(Mac)'))
-    False
-    >>> is_definite_clause(expr('(Farmer(f) & Rabbit(r)) ==> Hates(f, r)'))
-    True
-    >>> is_definite_clause(expr('(Farmer(f) & ~Rabbit(r)) ==> Hates(f, r)'))
-    False
     """
     op = s.op
     return (is_symbol(op) or
@@ -347,7 +313,8 @@ def tt_check_all(kb, alpha, symbols, model):
 def prop_symbols(x):
     "Return a list of all propositional symbols in x."
     if not isinstance(x, Expr):
-        raise Exception,['wat',x] #return []
+        from spock import Expression
+        raise Exception, Expression(x)#['wat',x] #return []
     elif is_prop_symbol(x.op):
         return [x]
     else:
@@ -520,24 +487,14 @@ def NaryExpr(op, *args):
         return Expr(op, *arglist)
 
 def conjuncts(s):
-    """Return a list of the conjuncts in the sentence s.
-    >>> conjuncts(A & B)
-    [A, B]
-    >>> conjuncts(A | B)
-    [(A | B)]
-    """
+    """Return a list of the conjuncts in the sentence s."""
     if isinstance(s, Expr) and s.op == '&':
         return s.args
     else:
         return [s]
 
 def disjuncts(s):
-    """Return a list of the disjuncts in the sentence s.
-    >>> disjuncts(A | B)
-    [A, B]
-    >>> disjuncts(A & B)
-    [(A & B)]
-    """
+    """Return a list of the disjuncts in the sentence s. """
     if isinstance(s, Expr) and s.op == '|':
         return s.args
     else:
@@ -1051,156 +1008,3 @@ def subst_compose (s1, s2):
             sc[x] = v
         # otherwise s1[x] preemptys s2[x]
     return sc
-
-#______________________________________________________________________________
-
-# Example application (not in the book).
-# You can use the Expr class to do symbolic differentiation.  This used to be
-# a part of AI; now it is considered a separate field, Symbolic Algebra.
-
-def diff(y, x):
-    """Return the symbolic derivative, dy/dx, as an Expr.
-    However, you probably want to simplify the results with simp.
-    >>> diff(x * x, x)
-    ((x * 1) + (x * 1))
-    >>> simp(diff(x * x, x))
-    (2 * x)
-    """
-    if y == x: return ONE
-    elif not y.args: return ZERO
-    else:
-        u, op, v = y.args[0], y.op, y.args[-1]
-        if op == '+': return diff(u, x) + diff(v, x)
-        elif op == '-' and len(args) == 1: return -diff(u, x)
-        elif op == '-': return diff(u, x) - diff(v, x)
-        elif op == '*': return u * diff(v, x) + v * diff(u, x)
-        elif op == '/': return (v*diff(u, x) - u*diff(v, x)) / (v * v)
-        elif op == '**' and isnumber(x.op):
-            return (v * u ** (v - 1) * diff(u, x))
-        elif op == '**': return (v * u ** (v - 1) * diff(u, x)
-                                 + u ** v * Expr('log')(u) * diff(v, x))
-        elif op == 'log': return diff(u, x) / u
-        else: raise ValueError("Unknown op: %s in diff(%s, %s)" % (op, y, x))
-
-def simp(x):
-    if not x.args: return x
-    args = map(simp, x.args)
-    u, op, v = args[0], x.op, args[-1]
-    if op == '+':
-        if v == ZERO: return u
-        if u == ZERO: return v
-        if u == v: return TWO * u
-        if u == -v or v == -u: return ZERO
-    elif op == '-' and len(args) == 1:
-        if u.op == '-' and len(u.args) == 1: return u.args[0] ## --y ==> y
-    elif op == '-':
-        if v == ZERO: return u
-        if u == ZERO: return -v
-        if u == v: return ZERO
-        if u == -v or v == -u: return ZERO
-    elif op == '*':
-        if u == ZERO or v == ZERO: return ZERO
-        if u == ONE: return v
-        if v == ONE: return u
-        if u == v: return u ** 2
-    elif op == '/':
-        if u == ZERO: return ZERO
-        if v == ZERO: return Expr('Undefined')
-        if u == v: return ONE
-        if u == -v or v == -u: return ZERO
-    elif op == '**':
-        if u == ZERO: return ZERO
-        if v == ZERO: return ONE
-        if u == ONE: return ONE
-        if v == ONE: return u
-    elif op == 'log':
-        if u == ONE: return ZERO
-    else: raise ValueError("Unknown op: " + op)
-    ## If we fall through to here, we can not simplify further
-    return Expr(op, *args)
-
-def d(y, x):
-    "Differentiate and then simplify."
-    return simp(diff(y, x))
-
-#________________________________________________________________________
-
-class logicTest: """
-### PropKB
->>> kb = PropKB()
->>> kb.tell(A & B)
->>> kb.tell(B >> C)
->>> kb.ask(C) ## The result {} means true, with no substitutions
-{}
->>> kb.ask(P)
-False
->>> kb.retract(B)
->>> kb.ask(C)
-False
-
->>> pl_true(P, {})
->>> pl_true(P | Q, {P: True})
-True
-
-# Notice that the function pl_true cannot reason by cases:
->>> pl_true(P | ~P)
-
-# However, tt_true can:
->>> tt_true(P | ~P)
-True
-
-# The following are tautologies from [Fig. 7.11]:
->>> tt_true("(A & B) <=> (B & A)")
-True
->>> tt_true("(A | B) <=> (B | A)")
-True
->>> tt_true("((A & B) & C) <=> (A & (B & C))")
-True
->>> tt_true("((A | B) | C) <=> (A | (B | C))")
-True
->>> tt_true("~~A <=> A")
-True
->>> tt_true("(A >> B) <=> (~B >> ~A)")
-True
->>> tt_true("(A >> B) <=> (~A | B)")
-True
->>> tt_true("(A <=> B) <=> ((A >> B) & (B >> A))")
-True
->>> tt_true("~(A & B) <=> (~A | ~B)")
-True
->>> tt_true("~(A | B) <=> (~A & ~B)")
-True
->>> tt_true("(A & (B | C)) <=> ((A & B) | (A & C))")
-True
->>> tt_true("(A | (B & C)) <=> ((A | B) & (A | C))")
-True
-
-# The following are not tautologies:
->>> tt_true(A & ~A)
-False
->>> tt_true(A & B)
-False
-
-### [Fig. 7.13]
->>> alpha = expr("~P12")
->>> to_cnf(Fig[7,13] & ~alpha)
-((~P12 | B11) & (~P21 | B11) & (P12 | P21 | ~B11) & ~B11 & P12)
->>> tt_entails(Fig[7,13], alpha)
-True
->>> pl_resolution(PropKB(Fig[7,13]), alpha)
-True
-
-### [Fig. 7.15]
->>> pl_fc_entails(Fig[7,15], expr('SomethingSilly'))
-False
-
-### Unification:
->>> unify(x, x, {})
-{}
->>> unify(x, 3, {})
-{x: 3}
-
-
->>> to_cnf((P&Q) | (~P & ~Q))
-((~P | P) & (~Q | P) & (~P | Q) & (~Q | Q))
-"""

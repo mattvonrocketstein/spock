@@ -19,8 +19,8 @@ class Expression(Expr):
         >>> is_definite_clause(farmer(f) & Rabbit(r) >> Hates(f,r))
 
     """
-
     def decompose(self):
+        """ TODO: use literals() """
         if self.simple:
             return [self]
         elif self.op.isalpha():
@@ -43,6 +43,7 @@ class Expression(Expr):
 
     @property
     def simple(self):
+        # TODO: use is_literal() instead?
         # TODO: increasingly bad module name
         return not self.args
 
@@ -57,6 +58,7 @@ class symbol(_tmp):
         # TODO: better docs
         return id(x)
 class predicate(_tmp): pass
+
 predicate = predicate()
 symbol    = symbol()
 p = P = predicate
