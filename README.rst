@@ -58,6 +58,7 @@ Type this::
 
 Related Reading and Software
 ----------------------------
+  * Lattice logics for paraconsistency http://www.cs.sunysb.edu/~kifer/TechReports/rwi.pdf
   * LFI1: http://www.deamo.prof.ufu.br/arquivos/FLAIRS05AmoS.pdf
   * FLIP: a logic framework in python http://staff.washington.edu/jon/flip/
   * logic.py: http://truxler.net/robgfx/images/logic/tech_report.pdf
