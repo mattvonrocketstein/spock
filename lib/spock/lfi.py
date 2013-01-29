@@ -20,16 +20,13 @@ class Operator(object):
 
 class CommutingOperator(Operator):
     def __call__(self, *args):
+        sooper = super(CommutingOperator, self).__call__
         try:
-            return super(CommutingOperator,self).__call__(*args)
+            return sooper(*args)
         except KeyError:
             args = list(args)
             args.reverse()
-            return super(CommutingOperator,self).__call__(*args)
-
-class Logic(object):
-    def __init__(self, operators):
-        self.operators = operators
+            return sooper(*args)
 
 negative_by_default = Operator([
     [['t'],'f'],
