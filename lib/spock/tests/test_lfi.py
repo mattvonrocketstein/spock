@@ -1,6 +1,9 @@
+""" test_lfi
 """
-"""
+
 from unittest2 import TestCase
+
+from spock.lfi import _or, _arrow, _and
 
 def xcombinations(items, n):
     if n==0: yield []
@@ -25,6 +28,7 @@ def xselections(items, n):
 
 def xpermutations(items):
     return xcombinations(items, len(items))
+
 
 class Test(TestCase):
     def setUp(self):
