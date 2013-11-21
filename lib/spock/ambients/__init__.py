@@ -25,9 +25,12 @@ class Ambient(AbstractAmbient):
 
          http://en.wikipedia.org/wiki/Ambient_calculus
     """
-    def __init__(self, content=None, parent=None):
+    def __init__(self, content={}, parent=None):
         self.parent = parent
-        self.content = content
+        self.content=content
+    @arg_types()
+    def _set_content(self, content):
+    self.content = content
 
     def _set_parent(self, parent):
         self._parent = parent
