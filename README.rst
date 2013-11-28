@@ -31,9 +31,6 @@ Examples
 --------
 
 
-  TODO: adapt more from nice pythonic http://staff.washington.edu/jon/flip/www/witch.html ?
-
-
 Installation
 -------------
 

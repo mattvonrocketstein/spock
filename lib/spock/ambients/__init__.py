@@ -28,12 +28,14 @@ class Ambient(AbstractAmbient):
     def __init__(self, content={}, parent=None):
         self.parent = parent
         self.content=content
-    @arg_types()
+
+    @ambient_args
     def _set_content(self, content):
-    self.content = content
+        self.content = content
 
     def _set_parent(self, parent):
         self._parent = parent
+
     def _get_parent(self):
         return self._parent
     parent = property(_get_parent, _set_parent)
