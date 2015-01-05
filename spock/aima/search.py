@@ -409,34 +409,6 @@ def RandomGraph(nodes=range(10), min_links=2, width=400, height=300,
                 g.connect(node, neighbor, int(d))
     return g
 
-romania = UndirectedGraph(Dict(
-    A=Dict(Z=75, S=140, T=118),
-    B=Dict(U=85, P=101, G=90, F=211),
-    C=Dict(D=120, R=146, P=138),
-    D=Dict(M=75),
-    E=Dict(H=86),
-    F=Dict(S=99),
-    H=Dict(U=98),
-    I=Dict(V=92, N=87),
-    L=Dict(T=111, M=70),
-    O=Dict(Z=71, S=151),
-    P=Dict(R=97),
-    R=Dict(S=80),
-    U=Dict(V=142)))
-romania.locations = Dict(
-    A=( 91, 492),    B=(400, 327),    C=(253, 288),   D=(165, 299),
-    E=(562, 293),    F=(305, 449),    G=(375, 270),   H=(534, 350),
-    I=(473, 506),    L=(165, 379),    M=(168, 339),   N=(406, 537),
-    O=(131, 571),    P=(320, 368),    R=(233, 410),   S=(207, 457),
-    T=( 94, 410),    U=(456, 350),    V=(509, 444),   Z=(108, 531))
-
-australia = UndirectedGraph(Dict(
-    T=Dict(),
-    SA=Dict(WA=1, NT=1, Q=1, NSW=1, V=1),
-    NT=Dict(WA=1, Q=1),
-    NSW=Dict(Q=1, V=1)))
-australia.locations = Dict(WA=(120, 24), NT=(135, 20), SA=(135, 30),
-                           Q=(145, 20), NSW=(145, 32), T=(145, 42), V=(145, 37))
 
 class GraphProblem(Problem):
     "The problem of searching a graph from one node to another."
@@ -726,10 +698,12 @@ class InstrumentedProblem(Problem):
         return '<%4d/%4d/%4d/%s>' % (self.succs, self.goal_tests,
                                      self.states, str(self.found)[0:4])
 
-def compare_searchers(problems, header, searchers=[breadth_first_tree_search,
-                      breadth_first_graph_search, depth_first_graph_search,
-                      iterative_deepening_search, depth_limited_search,
-                      astar_search]):
+SEARCHERS = [ breadth_first_tree_search,
+              breadth_first_graph_search, depth_first_graph_search,
+              iterative_deepening_search, depth_limited_search,
+              astar_search ]
+
+def compare_searchers(problems, header, searchers=SEARCHERS):
     def do(searcher, problem):
         p = InstrumentedProblem(problem)
         searcher(p)
@@ -737,19 +711,6 @@ def compare_searchers(problems, header, searchers=[breadth_first_tree_search,
     table = [[name(s)] + [do(s, p) for p in problems] for s in searchers]
     print_table(table, header)
 
-def compare_graph_searchers():
-    """Prints a table of results like this:
-Searcher                     Romania(A,B)         Romania(O, N)        Australia
-breadth_first_tree_search    <  21/  22/  59/B>   <1158/1159/3288/N>   <   7/   8/  22/WA>
-breadth_first_graph_search   <  10/  19/  26/B>   <  19/  45/  45/N>   <   5/   8/  16/WA>
-depth_first_graph_search     <   9/  15/  23/B>   <  16/  27/  39/N>   <   4/   7/  13/WA>
-iterative_deepening_search   <  11/  33/  31/B>   < 656/1815/1812/N>   <   3/  11/  11/WA>
-depth_limited_search         <  54/  65/ 185/B>   < 387/1012/1125/N>   <  50/  54/ 200/WA>
-astar_search                 <   3/   4/   9/B>   <   8/  10/  22/N>   <   2/   3/   6/WA>  """
-    compare_searchers(problems=[GraphProblem('A', 'B', romania),
-                                GraphProblem('O', 'N', romania),
-                                GraphProblem('Q', 'WA', australia)],
-            header=['Searcher', 'Romania(A,B)', 'Romania(O, N)', 'Australia'])
 
 #______________________________________________________________________________
 
@@ -783,9 +744,6 @@ N  I  D
 __doc__ += random_tests("""
 >>> ' '.join(f.words())
 'LID LARES DEAL LIE DIETS LIN LINT TIL TIN RATED ERAS LATEN DEAR TIE LINE INTER STEAL LATED LAST TAR SAL DITES RALES SAE RETS TAE RAT RAS SAT IDLE TILDES LEAST IDEAS LITE SATED TINED LEST LIT RASE RENTS TINEA EDIT EDITS NITES ALES LATE LETS RELIT TINES LEI LAT ELINT LATI SENT TARED DINE STAR SEAR NEST LITAS TIED SEAT SERAL RATE DINT DEL DEN SEAL TIER TIES NET SALINE DILATE EAST TIDES LINTER NEAR LITS ELINTS DENI RASED SERA TILE NEAT DERAT IDLEST NIDE LIEN STARED LIER LIES SETA NITS TINE DITAS ALINE SATIN TAS ASTER LEAS TSAR LAR NITE RALE LAS REAL NITER ATE RES RATEL IDEA RET IDEAL REI RATS STALE DENT RED IDES ALIEN SET TEL SER TEN TEA TED SALE TALE STILE ARES SEA TILDE SEN SEL ALINES SEI LASE DINES ILEA LINES ELD TIDE RENT DIEL STELA TAEL STALED EARL LEA TILES TILER LED ETA TALI ALE LASED TELA LET IDLER REIN ALIT ITS NIDES DIN DIE DENTS STIED LINER LASTED RATINE ERA IDLES DIT RENTAL DINER SENTI TINEAL DEIL TEAR LITER LINTS TEAL DIES EAR EAT ARLES SATE STARE DITS DELI DENTAL REST DITE DENTIL DINTS DITA DIET LENT NETS NIL NIT SETAL LATS TARE ARE SATI'
-
->>> boggle_hill_climbing(list('ABCDEFGHI'), verbose=False)
-(['E', 'P', 'R', 'D', 'O', 'A', 'G', 'S', 'T'], 123)
 
 >>> random_weighted_selection(range(10), 3, lambda x: x * x)
 [8, 9, 6]
