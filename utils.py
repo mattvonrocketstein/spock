@@ -358,6 +358,7 @@ def printf(format, *args):
     sys.stdout.write(str(format) % args)
     return if_(args, args[-1], format)
 
+import inspect
 def caller(n=1):
     """Return the name of the calling function n levels up in the frame stack.
     >>> caller(0)
@@ -367,7 +368,6 @@ def caller(n=1):
     >>> f()
     'f'
     """
-    import inspect
     return  inspect.getouterframes(inspect.currentframe())[n][3]
 
 def memoize(fn, slot=None):
