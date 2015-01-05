@@ -6,6 +6,7 @@ def entry():
     exec('from spock import *', namespace)
     print 'publishing these names: ', namespace.keys()
     try:
-        from IPython import Shell; Shell.IPShellEmbed(user_ns =namespace, argv=['-noconfirm_exit'])()
+        from IPython import start_ipython
+        start_ipython(user_ns=namespace)
     except ImportError:
-        raise SystemExit("spock's shell reuqires IPython to be installed.")
+        raise SystemExit("ERROR: spock's shell requires IPython to be installed.")

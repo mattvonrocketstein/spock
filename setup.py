@@ -1,57 +1,35 @@
 #!/usr/bin/env python
 """ setup.py for spock
 """
+import os, sys
+from setuptools import setup
 
-import os
-from setuptools import setup, find_packages
+# make sure that finding packages works, even
+# when setup.py is invoked from outside this dir
+this_dir = os.path.dirname(os.path.abspath(__file__))
+if not os.getcwd()==this_dir:
+    os.chdir(this_dir)
 
-try:
-    from setuptools import setup, find_packages
-    have_setuptools = True
-except ImportError:
-    from distutils.core import setup
-    def find_packages():
-        return [
-            'spock',
-        ]
-    have_setuptools = False
+# make sure we can import the version number so that it doesn't have
+# to be changed in two places. spock/__init__.py is also free
+# to import various requirements that haven't been installed yet
+sys.path.append(os.path.join(this_dir, 'spock'))
+from version import __version__
+sys.path.pop()
 
-try:
-    from distutils.command.build_py import build_py_2to3 as build_py
-except ImportError:
-    from distutils.command.build_py import build_py
-
-if have_setuptools:
-    add_keywords = dict( entry_points = \
-                         {
-                             'console_scripts': \
-                             ['spock = spock.bin.spock:entry', ]
-                         }, )
-else:
-    add_keywords = dict( scripts = ['spock'], )
-
-
+base_url = 'https://github.com/mattvonrocketstein/spock/'
 setup(
-    name         ='spock',
-    version      = '.1',
-    description  = 'logic for python',
-    author       = 'mattvonrocketstein, in the gmails',
-    url          = 'one of these days',
-    license      = 'BSD License',
-    package_dir  = {'': 'lib'},
-    packages     = find_packages('lib'),
-    long_description = __doc__,
-    keywords = 'logic',
-    platforms = 'any',
-    zip_safe = False,
-    include_package_data = True,
-    classifiers = [
-        'License :: OSI Approved :: BSD License',
-        'Intended Audience :: Developers',
-        'Development Status :: 000 - Experimental',
-        'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Operating System :: OS Independent', ],
-    cmdclass = {'build_py': build_py},
-    **add_keywords
-)
+    name         = 'spock',
+    version      = __version__,
+    description  = '',
+    author       = 'mattvonrocketstein',
+    author_email = '$author@gmail',
+    url          = base_url,
+    download_url = base_url+'/tarball/master',
+    packages     = ['spock'],
+    keywords     = ['logic', 'spock'],
+    entry_points = {
+        'console_scripts': \
+        ['spock = spock.bin.spock:entry', ] },
+    install_requires = [],
+    )
